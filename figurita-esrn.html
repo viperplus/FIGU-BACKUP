@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Figurita ESRN Rural 2026</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto+Condensed:wght@400;700&family=League+Spartan:wght@400;700&display=swap');
+
+        :root {
+            --azul-afa: #002d4a;
+            --celeste-linea: #74acdf;
+            --color-sede: #74acdf;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background: #cbd5e1;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .editor-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .preview-wrapper {
+            width: 405px;
+            height: 531px;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            background: white;
+            position: relative;
+        }
+
+        #capture-area {
+            width: 1350px;
+            height: 1770px;
+            transform: scale(0.3);
+            transform-origin: top left;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .sticker {
+            width: 1350px;
+            height: 1770px;
+            background: #fff;
+            border-radius: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sticker-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 60px;
+            border: 12px solid white;
+            background-image: linear-gradient(to bottom, #74acdf 0%, #ffffff 50%, #74acdf 100%);
+            z-index: 1;
+        }
+
+        .sticker::after {
+            content: "";
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border: 8px solid var(--celeste-linea);
+            border-radius: 70px;
+            pointer-events: none;
+            z-index: -1;
+            background: transparent;
+        }
+
+        .stars-container {
+            position: absolute;
+            top: 5px; left: 0; right: 0;
+            display: flex; justify-content: center; align-items: flex-end;
+            gap: 20px; z-index: 20;
+        }
+
+        .star { color: #ffd700; font-size: 4.5rem; }
+        .star.main { font-size: 7rem; align-self: flex-start; }
+
+        .arg-flag {
+            position: absolute;
+            top: 30px; right: 40px;
+            width: 100px; height: 70px;
+            border: 4px solid white; border-radius: 8px;
+            background: linear-gradient(to bottom, #74acdf 33%, #fff 33%, #fff 66%, #74acdf 66%);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; z-index: 20;
+        }
+
+        .gold-frame {
+            position: absolute;
+            top: 150px; left: 50%;
+            transform: translateX(-50%);
+            width: 1200px; height: 1100px;
+            background: linear-gradient(135deg, #d4af37 0%, #f9e79f 25%, #d4af37 50%, #f9e79f 75%, #d4af37 100%);
+            padding: 20px; border-radius: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .image-viewport {
+            width: 100%; height: 100%;
+            background: #eee; border-radius: 25px;
+            overflow: hidden; position: relative;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        #outPhoto {
+            position: absolute;
+            max-width: none;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: contain;
+            transform-origin: center;
+            user-select: none;
+        }
+
+        .player-name {
+            position: absolute;
+            top: 1080px; left: 0; right: 0;
+            background: var(--color-sede);
+            color: white; font-family: 'Oswald';
+            text-align: center; font-size: 7rem;
+            padding: 15px 0; text-transform: uppercase;
+            z-index: 30; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .info-box {
+            position: absolute;
+            top: 1280px; left: 50%;
+            transform: translateX(-50%);
+            width: 1100px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 30px; padding: 25px;
+            z-index: 10;
+        }
+
+        .info-row { 
+            display: flex; font-size: 3.5rem; 
+            padding: 15px 0; border-bottom: 1px solid rgba(0,0,0,0.05); 
+            font-family: 'League Spartan', sans-serif;
+            align-items: center;
+            line-height: 1;
+        }
+        .info-label { font-weight: 900; color: var(--azul-afa); padding-right: 30px; font-family: 'League Spartan', sans-serif; font-size: 3.5rem; line-height: 1; }
+        .info-value { flex: 1; font-weight: bold; text-transform: uppercase; font-family: 'League Spartan', sans-serif; font-size: 3.5rem; display: flex; align-items: center; line-height: 1; }
+
+        .footer-sticker {
+            position: absolute; bottom: 30px; left: 50%;
+            transform: translateX(-50%);
+            text-align: center; font-size: 2rem; font-weight: bold;
+            color: white; z-index: 10; letter-spacing: 8px;
+            font-family: 'League Spartan', sans-serif;
+        }
+
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 0.7rem; font-weight: bold; margin-bottom: 3px; color: var(--azul-afa); text-transform: uppercase; }
+        .input-group input, .input-group select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        
+        .btn-descargar { 
+            width: 100%; padding: 15px; 
+            background: #059669; color: white; 
+            border: none; border-radius: 8px; 
+            font-weight: bold; cursor: pointer; 
+            margin-top: 10px; transition: 0.3s;
+        }
+        .btn-descargar:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        .crosshair {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 0;
+        }
+        .crosshair-row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .dir-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .dir-btn:hover { background: #e2e8f0; }
+        .dir-btn:active { background: #cbd5e1; }
+        .center-btn { font-size: 1rem; color: var(--azul-afa); }
+
+        @media (max-width: 800px) {
+            .main-wrapper { flex-direction: column; align-items: center; }
+            .editor-card { width: 100%; max-width: 380px; }
+            .preview-wrapper { width: 320px; height: 419px; }
+            #capture-area { transform: scale(0.237); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="editor-card">
+            <h3 style="margin-top:0; color: #002d4a; border-bottom: 2px solid #74acdf; margin-bottom: 15px; font-family: 'Oswald', sans-serif; text-align: center;">FIGURITAS ESRN RURAL 2026</h3>
+            
+            <div class="input-group"><label>Nombre y Apellido</label><input type="text" id="inName" placeholder="LIONEL MESSI" oninput="sync()"></div>
+            
+            <div class="input-group"><label>Sede / Anexo</label>
+                <select id="inSede" onchange="sync()">
+                    <option value="#38bdf8">Anexo N° 1 Chelforó</option>
+                    <option value="#fb923c">Anexo N° 4 Aguada de Guerra</option>
+                    <option value="#4ade80">Anexo N° 5 Rincón Treneta</option>
+                    <option value="#f87171">Anexo N° 6 Comicó</option>
+                    <option value="#818cf8">Anexo N° 8 Yaminué</option>
+                    <option value="#2dd4bf">Anexo N° 9 Cerro Policia</option>
+                    <option value="#fbbf24">Anexo N° 10 Aguada Guzmán</option>
+                    <option value="#60a5fa">Anexo N° 11 Mencué</option>
+                    <option value="#f472b6">Anexo N° 12 Corralito</option>
+                    <option value="#22d3ee">Anexo N° 13 Naupahuen</option>
+                    <option value="#fb7185">Anexo N° 14 Río Chico</option>
+                    <option value="#94a3b8">Anexo N° 15 Mamuel Choique</option>
+                    <option value="#34d399">Anexo N° 16 Aguada Cecilio</option>
+                    <option value="#60a5fa">Anexo N° 17 Sierra Paileman</option>
+                    <option value="#c084fc">Anexo N° 18 Arroyo Los Berros</option>
+                    <option value="#86efac">Anexo N° 19 Peñas Blancas</option>
+                    <option value="#93c5fd">Anexo N° 20 Laguna Blanca</option>
+                    <option value="#74acdf" selected>Anexo N° 21 Cona Niyeu</option>
+                    <option value="#fca5a5">Anexo N° 22 El Caín</option>
+                    <option value="#5eead4">Anexo N° 23 Lago Pellegrini</option>
+                    <option value="#fdba74">Anexo N° 24 Villa Llanquín</option>
+                    <option value="#94a3b8">Anexo N° 27 El Manso</option>
+                    <option value="#67e8f9">Anexo N° 28 El Cóndor</option>
+                    <option value="#bef264">Anexo N° 32 Valle Verde</option>
+                    <option value="#fda4af">Anexo N° 36 Colan Conhué</option>
+                    <option value="#94a3b8">Anexo N° 37 Blancura Centro</option>
+                    <option value="#f59e0b">Viedma</option>
+                </select>
+            </div>
+
+            <div class="input-group"><label>Habilidad Principal</label><input type="text" id="inHab" placeholder="VELOCIDAD" oninput="sync()"></div>
+            <div class="input-group"><label>Gustos / Hobbies</label><input type="text" id="inHob" placeholder="FÚTBOL Y DIBUJO" oninput="sync()"></div>
+            <div class="input-group"><label>Nació el...</label><input type="date" id="inBirth" oninput="sync()"></div>
+            <div class="input-group"><label>Zoom Foto</label><input type="range" id="inZoom" min="10" max="400" value="100" oninput="ajustarImagen()"></div>
+            <div class="input-group"><label>Posición de la Foto</label>
+                <div class="crosshair">
+                    <button class="dir-btn" onclick="moverImagen(0, -20)" title="Arriba">▲</button>
+                    <div class="crosshair-row">
+                        <button class="dir-btn" onclick="moverImagen(-20, 0)" title="Izquierda">◀</button>
+                        <button class="dir-btn center-btn" onclick="centrarImagen()" title="Centrar">◎</button>
+                        <button class="dir-btn" onclick="moverImagen(20, 0)" title="Derecha">▶</button>
+                    </div>
+                    <button class="dir-btn" onclick="moverImagen(0, 20)" title="Abajo">▼</button>
+                </div>
+            </div>
+            <div class="input-group"><label>Cargar Foto</label><input type="file" accept="image/*" onchange="previewImg(event)"></div>
+            
+            <button class="btn-descargar" id="btnMain" onclick="download()">DESCARGAR Y GUARDAR</button>
+        </div>
+
+        <div class="preview-wrapper">
+            <div id="capture-area">
+                <div class="sticker" id="card">
+                    <div class="sticker-bg"></div>
+                    <div class="arg-flag">☀️</div>
+                    <div class="stars-container">
+                        <span class="star">★</span><span class="star main">★</span><span class="star">★</span>
+                    </div>
+                    <div class="gold-frame">
+                        <div class="image-viewport" id="viewport">
+                            <img id="outPhoto" src="https://via.placeholder.com/800x1000?text=SUBE+TU+FOTO" alt="Foto">
+                        </div>
+                    </div>
+                    <h2 class="player-name" id="outName">JUGADOR</h2>
+                    <div class="info-box">
+                        <div class="info-row"><div class="info-label">📍 SEDE:</div><div class="info-value" id="outSede">CONA NIYEU</div></div>
+                        <div class="info-row"><div class="info-label">🚀 HAB:</div><div class="info-value" id="outHab">---</div></div>
+                        <div class="info-row"><div class="info-label">🎨 GUSTOS:</div><div class="info-value" id="outHob">---</div></div>
+                        <div class="info-row"><div class="info-label">📅 NACIÓ:</div><div class="info-value" id="outBirth">--/--/----</div></div>
+                    </div>
+                    <div class="footer-sticker">ESRN RURAL 2026</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const img = document.getElementById('outPhoto');
+        const zoomInp = document.getElementById('inZoom');
+        const viewport = document.getElementById('viewport');
+        const btnMain = document.getElementById('btnMain');
+        
+        let isDragging = false;
+        let startX, startY;
+        let imgX = 0, imgY = 0;
+        let initialDistance = 0;
+        let initialScale = 1;
+        
+        function getDistance(touches) {
+            return Math.sqrt(Math.pow(touches[0].clientX - touches[1].clientX, 2) + Math.pow(touches[0].clientY - touches[1].clientY, 2));
+        }
+        
+        function ajustarImagen() {
+            const scale = zoomInp.value / 100;
+            img.style.transform = `translate(${imgX}px, ${imgY}px) scale(${scale})`;
+        }
+
+        viewport.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - imgX;
+            startY = e.clientY - imgY;
+            viewport.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            imgX = e.clientX - startX;
+            imgY = e.clientY - startY;
+            ajustarImagen();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            viewport.style.cursor = 'grab';
+        });
+
+        viewport.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                startX = e.touches[0].clientX - imgX;
+                startY = e.touches[0].clientY - imgY;
+            } else if (e.touches.length === 2) {
+                isDragging = false;
+                initialDistance = getDistance(e.touches);
+                initialScale = zoomInp.value / 100;
+            }
+        }, {passive: true});
+
+        viewport.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1 && isDragging) {
+                imgX = e.touches[0].clientX - startX;
+                imgY = e.touches[0].clientY - startY;
+                ajustarImagen();
+            } else if (e.touches.length === 2) {
+                const currentDistance = getDistance(e.touches);
+                const scale = initialScale * (currentDistance / initialDistance);
+                zoomInp.value = Math.max(10, Math.min(400, scale * 100));
+                ajustarImagen();
+            }
+        }, {passive: false});
+
+        viewport.addEventListener('touchend', () => isDragging = false);
+
+        function moverImagen(dx, dy) {
+            imgX += dx;
+            imgY += dy;
+            ajustarImagen();
+        }
+
+        function centrarImagen() {
+            imgX = 0;
+            imgY = 0;
+            zoomInp.value = 100;
+            ajustarImagen();
+        }
+
+        function sync() {
+            const s = document.getElementById('inSede');
+            document.documentElement.style.setProperty('--color-sede', s.value);
+            document.getElementById('outName').innerText = document.getElementById('inName').value || 'JUGADOR';
+            
+            let fullSede = s.options[s.selectedIndex].text;
+            let cleanSede = fullSede.replace(/Anexo N° \d+ /, '').trim().toUpperCase();
+            document.getElementById('outSede').innerText = cleanSede;
+            
+            document.getElementById('outHab').innerText = document.getElementById('inHab').value || '---';
+            document.getElementById('outHob').innerText = document.getElementById('inHob').value || '---';
+            
+            const b = document.getElementById('inBirth').value;
+            if(b) {
+                const p = b.split('-');
+                document.getElementById('outBirth').innerText = `${p[2]}/${p[1]}/${p[0]}`;
+            }
+        }
+
+        function previewImg(e) {
+            const r = new FileReader();
+            r.onload = () => {
+                img.src = r.result;
+                imgX = 0; imgY = 0;
+                zoomInp.value = 100;
+                ajustarImagen();
+            };
+            if(e.target.files[0]) r.readAsDataURL(e.target.files[0]);
+        }
+
+        function download() {
+            const card = document.getElementById('card');
+            const originalBtnText = btnMain.innerText;
+            
+            btnMain.innerText = "⏳ GENERANDO FIGURITA...";
+            btnMain.disabled = true;
+
+            const nombre = document.getElementById('inName').value.trim().toUpperCase().replace(/\s+/g, '_') || 'JUGADOR';
+            const sedeSelect = document.getElementById('inSede');
+            const sedeText = sedeSelect.options[sedeSelect.selectedIndex].text;
+            const sedeClean = sedeText.replace('Anexo N° ', '').replace(/\d+\s/, '').trim().toUpperCase().replace(/\s+/g, '_');
+            const fileName = `${sedeClean}__${nombre}.png`;
+
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-5000px';
+            document.body.appendChild(tempContainer);
+            
+            const cardClone = card.cloneNode(true);
+            tempContainer.appendChild(cardClone);
+
+            setTimeout(() => {
+                btnMain.innerText = "📤 SUBIENDO A DRIVE...";
+                
+                html2canvas(cardClone, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: null
+                }).then(canvas => {
+                    const base64Image = canvas.toDataURL('image/png');
+                    const blob = dataURLToBlob(base64Image);
+
+                    // Descargar usando Blob URL (funciona mejor en móvil)
+                    const blobUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+
+                    // Subir a Google Drive
+                    const webAppUrl = "https://script.google.com/macros/s/AKfycbwra7bkFmm6k_cQWXv6r43AGhDSV4LSrWELPzLPL5_vUdZT2Q6jgYHFdt1oxN7aIRHi/exec"; 
+
+                    fetch(webAppUrl, {
+                        method: "POST",
+                        mode: "no-cors", 
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            image: base64Image,
+                            filename: fileName
+                        })
+                    })
+                    .then(() => {
+                        btnMain.innerText = "✅ GUARDADO!";
+                        setTimeout(() => {
+                            btnMain.innerText = originalBtnText;
+                            btnMain.disabled = false;
+                        }, 2000);
+                        document.body.removeChild(tempContainer);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        btnMain.innerText = originalBtnText;
+                        btnMain.disabled = false;
+                        document.body.removeChild(tempContainer);
+                    });
+                });
+            }, 100);
+        }
+
+        function dataURLToBlob(dataURL) {
+            const parts = dataURL.split(',');
+            const mime = parts[0].match(/:(.*?);/)[1];
+            const bstr = atob(parts[1]);
+            const n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+        
+        sync();
+    </script>
+</body>
+</html>
